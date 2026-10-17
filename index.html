@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notre Projet</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+       <section class="section1">
+    <div class="gestion" >
+        <img src="graduation-cap-solid.png" >
+        <div class="espace">
+            <p>ESPACE ADMINISTRATION</p>
+<h1> Gestion des étudiants UNCHK</h1>
+         <p>Gérez les inscriptions et les résultats. </p>
+        </div>
+         
+<button class="sombre-principal" id="themesombre">🌙 Mode sombre</button>
+
+    </div>
+    <section class="section2">
+    <div class="etud">
+        <p>TOTAL ETUDIANTS 👥</p>
+        <h1 id="total">0</h1>
+        <p>dans le répertoire</p>
+    </div>
+     
+    <div class="etud">
+        <p>Etudiants ADMIS ✅</p>
+        <h1 id="etudiants admis">0</h1>
+        <p id="reussite">0% de réussite</p>
+    </div>
+    <div class="etud">
+        <p>ETUDIANTS EN ECHEC ❌</p>
+        <h1 id="etudiant echecs">0</h1>
+        <p id="echec">0% d'échec</p>
+    </div>
+    <div class="etud">
+        <p>MOYENNE GENERALE 📊</p>
+        <h1 id="moyenne">00/20</h1>
+        <p>Moyenne globale de promo</p>
+    </div>
+     <div class="etud">
+        <p>MEILLEUR NOTE 🏆 </p>
+        <h1 id="note meilleur">00/20</h1>
+    </div>
+     <div class="etud">
+        <p>PLUS BASSE NOTE⚠️</p>
+        <h1 id="basse note">00/20</h1>
+    </div>
+   </section>
+   </section>
+      <section class="section3">
+          <div class="ajouter">
+          <h2> ➕Ajouter un étudiant</h2>
+          <p>Remplissez tous les champs obligatoires <span>(*)</span></p>
+          <div class="labelle">
+            <label for="text">Nom <span>*</span></label>
+            <input id="nom" type="text" placeholder="Ex:Ndiaye"><br>
+            <label for="text">Prénom <span>*</span></label>
+            <input id="prénom" type="text" placeholder="Ex:Saliou"><br>
+            <label for="text">Adresse Email <span>*</span></label>
+            <input id="mail" type="text" placeholder="Ex:Saliou.ndiaye@Etudiant.sn "><br>
+            <label for="text">Classe <span>*</span></label>
+           <select id="classe">
+            <option>--Sélectionnez une classe--</option>
+            <option>Licence1 Informatique </option>
+            <option>Licence2 Cybersécurité</option>
+            <option>Licence3 Communication Digitale</option>
+            <option >Master1 Informatique</option>
+            <option>Master2 Cybersécurité</option>
+           </select><br>
+            <label for="text">Note sur 20 <span>*</span></label>
+            <input id="notesur" type="number" placeholder="Ex: 15.5"><br>
+           <button>Ajouter l'étudiant</button>        
+          <p id="formMsg" class="form-msg"></p>
+           </div>
+          </div>
+          <div class="liste">
+           
+             <div class="Réinitialiser"> 
+                 <h2> 📋Liste des étudiants</h2>
+<button id="exportexcel" class="exportCSV">📥 Exporter en excel</button>
+            <button id="renitialisation">🔁Réinitialiser données</button>
+          </div>
+            <p class="affiché">0 étudiants affichés sur 0 au total</p>
+                
+            <label  for="text">Résultat:</label>
+           <select id="resultat">
+            <option>Tous les résultats</option>
+            <option>ADMIS uniquement >= 10 </option>
+            <option>Echecs uniquement ( 10 )</option>
+           </select>
+           <label for="text">Classe:</label>
+           <select id="touteslesclasses" >
+            <option >Toutes les classes</option>
+            <option>Licence1 Informatique </option>
+            <option>Licence2 Cybersécurité</option>
+            <option>Licence3 Communication Digitale</option>
+            <option >Master1 Informatique</option>
+            <option>Master2 Cybersécurité</option>
+           </select>
+           <label for="">🔎</label>
+           <input id="rechercheetudia" type="text" placeholder=" Rechercher un étudiant...">
+           <div class="etudiant">
+           <p>#</p>
+           <p>ETUDIANT(E)</p>
+           <p>EMAIL</p>
+           <p>ClASSE</p>
+           <p>NOTE</p>
+           <p>ACTIONS</p> 
+           </div> 
+           <div id="repertoire" class="recherche">
+           <p>🔎</p>
+           <h3>Votre répertoire est encore vide</h3>
+         <p>Ajoutez des étudiants pour commencer à les gérer.</p>
+           </div>
+           
+<!-- Bouton de pagination -->
+<div id="pagination">
+    <button id="precedent" disabled>Précédent</button>
+
+    <button class="page active">1</button>
+    <button class="page">2</button>
+    <button class="page">3</button>
+
+    <button id="suivant">Suivant</button>
+</div>
+
+          </div>
+      </section><br>
+     
+      <footer>
+        <p>&copy; 2026 Gestion des étudiants</p>
+        <p>Thecrazycrew07@gmail.com</p>
+        <p>Un suivi clair, une classe qui avance.</p>
+      </footer>
+      <script src="script.js"></script>
+</body>
+</html>
