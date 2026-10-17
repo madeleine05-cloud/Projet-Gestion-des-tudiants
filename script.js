@@ -1,4 +1,4 @@
-// RECUPERER LES ELEMENTS DE LA PAGE 
+// RECUPERER LES ELEMENTS DE LA PAGE
 const nomInput = document.getElementById('nom');
 const prenomInput = document.getElementById('prénom');
 const emailInput = document.getElementById('mail');
@@ -21,27 +21,30 @@ const rechercheInput = document.getElementById('rechercheetudia');
 const repertoire = document.getElementById('repertoire');
 const boutonReset = document.getElementById('renitialisation');
 const boutonSombre = document.getElementById('themesombre');
+
 // Mode sombre
 boutonSombre.addEventListener('click', function () {
     document.body.classList.toggle('sombre');
     boutonSombre.textContent = document.body.classList.contains('sombre') ? '☀️ Mode clair' : '🌙 Mode sombre';
 });
-exportexcel.addEventListener('click', function () {
-    
-const entetes = ["Nom", "Prénom", "Email", "Classe", "Note"];
 
-const lignes = etudiants.map(e => [
-    e.nom,
-    e.prenom,
-    e.email,
-    e.classe,
-    e.note
-]);
-// export en excel
-const excelContent = "data:text/excel;charset=utf-8,\uFEFF" +
-    [entetes, ...lignes]
-        .map(ligne => ligne.join(";"))
-        .join("\r\n");
+// Export Excel
+exportexcel.addEventListener('click', function () {
+
+    const entetes = ["Nom", "Prénom", "Email", "Classe", "Note"];
+
+    const lignes = etudiants.map(e => [
+        e.nom,
+        e.prenom,
+        e.email,
+        e.classe,
+        e.note
+    ]);
+
+    const excelContent = "data:text/excel;charset=utf-8,\uFEFF" +
+        [entetes, ...lignes]
+            .map(ligne => ligne.join(";"))
+            .join("\r\n");
 
     const encodedUri = encodeURI(excelContent);
     const link = document.createElement('a');
@@ -53,85 +56,95 @@ const excelContent = "data:text/excel;charset=utf-8,\uFEFF" +
 // On garde le message répertoire vide de côté pour le remettre quand il faut
 const etatVide = repertoire.innerHTML;
 
-//  LES DONNÉES 
+//  LES DONNÉES
 // On récupère les étudiants sauvegardés (ou un tableau vide si rien n'est sauvegardé)
 let etudiants = JSON.parse(localStorage.getItem('etudiants')) || [];
 
 // Quand on clique sur "Modifier", on garde ici l'id de l'étudiant concerné
 let idEnModification = null;
+
 function sauvegarder() {
     localStorage.setItem('etudiants', JSON.stringify(etudiants));
 }
 
 function afficherMessage(texte, type) {
     message.textContent = texte;
-    message.className = 'form-msg ' + type; 
+    message.className = 'form-msg ' + type;
 }
 
 
-//  AJOUTER OU MODIFIER UN ETUDIANT 
+//  AJOUTER OU MODIFIER UN ETUDIANT
 boutonAjouter.addEventListener('click', function (event) {
     event.preventDefault();
 
     // On lit ce que l'utilisateur a tapé
     const nom = nomInput.value.trim();
     const prenom = prenomInput.value.trim();
-    const email = emailInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
     const classe = classeSelect.value;
     const noteTexte = noteInput.value.trim().replace(',', '.');
 
-    //  tous les champs sont remplis ?
+    // tous les champs sont remplis ?
     if (nom === '' || prenom === '' || email === '' || noteTexte === '' || classeSelect.selectedIndex === 0) {
         afficherMessage('❌ Veuillez remplir tous les champs.', 'error');
         return;
     }
 
-    //  l'email a un format valide ?
+    // l'email a un format valide ?
     if (!email.includes('@') || !email.includes('.')) {
         afficherMessage('❌ Adresse email invalide.', 'error');
         return;
     }
 
-    // ici on verifie si la note est entre 0 et 20 ?
+    // la note est entre 0 et 20 ?
     const note = Number(noteTexte);
     if (isNaN(note) || note < 0 || note > 20) {
         afficherMessage('❌ La note doit être comprise entre 0 et 20.', 'error');
         return;
     }
 
+    // l'email est-il déjà utilisé par UN AUTRE étudiant ?
+    // (en mode ajout idEnModification vaut null, donc tous les étudiants sont comparés)
+    const dejaUtilise = etudiants.some(function (e) {
+        return e.email.trim().toLowerCase() === email
+            && e.id !== idEnModification;
+    });
+
+    if (dejaUtilise) {
+        afficherMessage('❌ Adresse email déjà utilisée.', 'error');
+        return;
+    }
+
     if (idEnModification === null) {
-        //  Mode AJOUT 
+        // Mode AJOUT
         const nouvelEtudiant = {
-            id: Date.now(), // un numéro unique basé sur l'heure
+            id: Date.now(),
             nom: nom,
             prenom: prenom,
             email: email,
             classe: classe,
-            note: note,
+            note: note
         };
-        // ici on verifie si l'email est déja utilisé par un autre étudiant
-        for (let i = 0; i < etudiants.length; i++) {
-             if(email == emailInput.value.trim()){
-        afficherMessage('❌ Adresse email déjà utilisée.', 'error');
-        return;
-    }
-        };
+
         etudiants.push(nouvelEtudiant);
         afficherMessage('✅ Étudiant ajouté avec succès.', 'success');
+
     } else {
-        // Mode MODIFICATION 
+        // Mode MODIFICATION
         const etudiant = etudiants.find(function (e) {
             return e.id === idEnModification;
         });
+
         etudiant.nom = nom;
         etudiant.prenom = prenom;
         etudiant.email = email;
         etudiant.classe = classe;
         etudiant.note = note;
 
+        // On repasse en mode ajout
         idEnModification = null;
         boutonAjouter.textContent = "Ajouter l'étudiant";
-        afficherMessage('✅ Modifications enregistrées.', 'success');
+        afficherMessage('✅ Étudiant modifié avec succès.', 'success');
     }
 
     sauvegarder();
@@ -146,7 +159,7 @@ boutonAjouter.addEventListener('click', function (event) {
     afficherEtudiants();
 });
 
-//  MODIFIER : remplir le formulaire avec les infos de l'étudiant 
+//  MODIFIER : remplir le formulaire avec les infos de l'étudiant
 function modifierEtudiant(id) {
     const etudiant = etudiants.find(function (e) {
         return e.id === id;
@@ -162,7 +175,7 @@ function modifierEtudiant(id) {
     boutonAjouter.textContent = 'Enregistrer les modifications';
 }
 
-//  SUPPRIMER 
+//  SUPPRIMER
 function supprimerEtudiant(id) {
     const confirmation = confirm('Voulez-vous vraiment supprimer cet étudiant ?');
 
@@ -187,7 +200,7 @@ boutonReset.addEventListener('click', function () {
     }
 });
 
-// FILTRES ET RECHERCHE 
+// FILTRES ET RECHERCHE
 function getEtudiantsFiltres() {
     const resultat = [];
     const recherche = rechercheInput.value.toLowerCase();
@@ -229,7 +242,7 @@ filtreResultat.addEventListener('change', afficherEtudiants);
 filtreClasse.addEventListener('change', afficherEtudiants);
 rechercheInput.addEventListener('input', afficherEtudiants);
 
-// AFFICHER LES ETUDIANTS 
+// AFFICHER LES ETUDIANTS
 function afficherEtudiants() {
     const liste = getEtudiantsFiltres();
 
@@ -278,7 +291,7 @@ function afficherEtudiants() {
     calculerStatistiques();
 }
 
-//  STATISTIQUES 
+//  STATISTIQUES
 function calculerStatistiques() {
     const total = etudiants.length;
     let nbAdmis = 0;
@@ -295,7 +308,7 @@ function calculerStatistiques() {
         } else {
             nbEchecs++;
         }
-  
+
         somme = somme + note;
 
         if (note > meilleure) {
@@ -311,20 +324,18 @@ function calculerStatistiques() {
     echecEl.textContent = nbEchecs;
 
     if (total === 0) {
-       echecEl.textContent = "0%";
+        pourcentageEchecEl.textContent = "0%";
         reussiteEl.textContent = "0%";
         moyenneEl.textContent = '00/20';
         meilleureEl.textContent = '00/20';
         basseEl.textContent = '00/20';
     } else {
         const pourcentageEchec = Math.round((nbEchecs / total) * 100);
-        console.log(pourcentageEchec);
-        
-         reussiteEl.textContent = pourcentageEchec + "%";
         const pourcentageReussite = Math.round((nbAdmis / total) * 100);
+
         reussiteEl.textContent = pourcentageReussite + "%";
-       echecEl.textContent = nbEchecs ;
-       pourcentageEchecEl.textContent = pourcentageEchec + "%";
+        echecEl.textContent = nbEchecs;
+        pourcentageEchecEl.textContent = pourcentageEchec + "%";
         moyenneEl.textContent = (somme / total).toFixed(2) + '/20';
         meilleureEl.textContent = meilleure + '/20';
         basseEl.textContent = basse + '/20';
