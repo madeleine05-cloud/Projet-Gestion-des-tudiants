@@ -327,6 +327,43 @@ footer {
 .btn-suppr:hover {
     background: #F5D0CE;
 }
+/* supprimer confirm */
+.modal-fond {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-fond.visible { display: flex; }
+
+.modal-carte {
+    background: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.modal-carte h3 { margin-bottom: 10px; color: #c0392b; }
+.modal-carte p { margin-bottom: 20px; }
+
+.modal-boutons { display: flex; gap: 10px; }
+.modal-boutons button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+.modal-annuler { background: #ddd; }
+.modal-confirmer { background: #e74c3c; color: #fff; }
+
+body.sombre .modal-carte { background: #2b2b3c; color: #fff; }
 /* page bienvenue */
 .bienvenue{
   text-align: center;
@@ -344,6 +381,45 @@ margin: 50px auto;
 img{
   width: 150px;
   border-radius: 50%;
+}
+.logo {
+    border-radius: 50%;
+    animation: tourner 8s linear infinite;
+}
+
+@keyframes tourner {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+.slogan {
+  font-family: monospace;
+  font-size: 22px;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid #c8d5dd; /* curseur qui clignote */
+  width: 0;
+  animation: ecrire 3s steps(30) forwards, clignote 0.7s infinite, glow 1.5s ease-in-out infinite alternate;
+  margin: 20px auto;
+}
+
+/* Animation écriture */
+@keyframes ecrire {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Curseur qui clignote */
+@keyframes clignote {
+  50% { border-color: transparent; }
+}
+
+/* Effet néon rose comme ton logo */
+@keyframes glow {
+  from { text-shadow: 0 0 5px #141742, 0 0 10px #2d42ad; }
+  to { text-shadow: 0 0 15px #1a1b23, 0 0 25px #2918a8, 0 0 35px #fff; }
 }
 .presentation{
    background: #3a6ab7;
@@ -367,10 +443,10 @@ img{
   cursor: pointer;
   transition: 0.3s;
 }
-  .slogan{
+  /* .slogan{
     font-size: 20px;
    animation: float 3s ease-in-out infinite;
-  }
+  } */
 .ouvrir a{
   text-decoration: none;
   color: aliceblue;
@@ -558,14 +634,19 @@ footer {
     gap: 15px;
     padding: 10px;
   }
-  .ajouter,
-  .liste {
-    width: 100%;
+  .ajouter{
+        width: 100%;
     min-width: 0;
     margin: 0;
     padding: 15px;
   }
-
+  
+ .liste {
+    width: 100%;
+   
+    margin: 0;
+    padding: 15px;
+  }
   .ajouter h2,
   .liste h2 {
     font-size: 30px;
@@ -584,8 +665,9 @@ footer {
   }
   .Réinitialiser button,
   .exportCSV button {
-    width: 45%;
+    width: 60%;
     margin: 0;
+  
   }
   .etudiant {
     min-width: 600px;

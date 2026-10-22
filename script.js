@@ -22,6 +22,38 @@ const repertoire = document.getElementById('repertoire');
 const boutonReset = document.getElementById('renitialisation');
 const boutonSombre = document.getElementById('themesombre');
 
+// PAGINATION
+const PAR_PAGE = 3;
+let pageActuelle = 1;
+const boutonPrec = document.getElementById('precedent');
+const boutonSuiv = document.getElementById('suivant');
+const boutonsPage = document.querySelectorAll('#pagination .page');
+
+boutonPrec.addEventListener('click', function () {
+    pageActuelle--;
+    afficherEtudiants();
+});
+boutonSuiv.addEventListener('click', function () {
+    pageActuelle++;
+    afficherEtudiants();
+});
+boutonsPage.forEach(function (btn, i) {
+    btn.addEventListener('click', function () {
+        pageActuelle = i + 1;
+        afficherEtudiants();
+    });
+});
+
+function majPagination(totalPages) {
+    boutonsPage.forEach(function (btn, i) {
+        const numero = i + 1;
+        btn.style.display = numero <= totalPages ? '' : 'none';
+        btn.classList.toggle('active', numero === pageActuelle);
+    });
+    boutonPrec.disabled = pageActuelle <= 1;
+    boutonSuiv.disabled = pageActuelle >= totalPages;
+}
+
 // Mode sombre
 boutonSombre.addEventListener('click', function () {
     document.body.classList.toggle('sombre');
@@ -175,19 +207,35 @@ function modifierEtudiant(id) {
     boutonAjouter.textContent = 'Enregistrer les modifications';
 }
 
-//  SUPPRIMER
-function supprimerEtudiant(id) {
-    const confirmation = confirm('Voulez-vous vraiment supprimer cet étudiant ?');
+// SUPPRIMER
+let idASupprimer = null;
+const modalSuppr = document.getElementById('modalSuppr');
+const modalTexte = document.getElementById('modalTexte');
 
-    if (confirmation) {
-        // On garde tous les étudiants SAUF celui qu'on supprime
-        etudiants = etudiants.filter(function (e) {
-            return e.id !== id;
-        });
-        sauvegarder();
-        afficherEtudiants();
-    }
+function supprimerEtudiant(id) {
+    const etudiant = etudiants.find(function (e) {
+        return e.id === id;
+    });
+    idASupprimer = id;
+    modalTexte.textContent = 'Voulez-vous vraiment supprimer ' + etudiant.prenom + ' ' + etudiant.nom + ' ?';
+    modalSuppr.classList.add('visible');
 }
+
+document.getElementById('btnConfirmer').addEventListener('click', function () {
+    // On garde tous les étudiants SAUF celui qu'on supprime
+    etudiants = etudiants.filter(function (e) {
+        return e.id !== idASupprimer;
+    });
+    sauvegarder();
+    afficherEtudiants();
+    modalSuppr.classList.remove('visible');
+    idASupprimer = null;
+});
+
+document.getElementById('btnAnnuler').addEventListener('click', function () {
+    modalSuppr.classList.remove('visible');
+    idASupprimer = null;
+});
 
 // REINITIALISER
 boutonReset.addEventListener('click', function () {
@@ -238,13 +286,19 @@ function getEtudiantsFiltres() {
     return resultat;
 }
 
-filtreResultat.addEventListener('change', afficherEtudiants);
-filtreClasse.addEventListener('change', afficherEtudiants);
-rechercheInput.addEventListener('input', afficherEtudiants);
+filtreResultat.addEventListener('change', function () { pageActuelle = 1; afficherEtudiants(); });
+filtreClasse.addEventListener('change', function () { pageActuelle = 1; afficherEtudiants(); });
+rechercheInput.addEventListener('input', function () { pageActuelle = 1; afficherEtudiants(); });
 
 // AFFICHER LES ETUDIANTS
 function afficherEtudiants() {
     const liste = getEtudiantsFiltres();
+
+    // Calcul de la page
+    const totalPages = Math.max(1, Math.ceil(liste.length / PAR_PAGE));
+    if (pageActuelle > totalPages) pageActuelle = totalPages;
+    const debut = (pageActuelle - 1) * PAR_PAGE;
+    const pageListe = liste.slice(debut, debut + PAR_PAGE);
 
     affiche.textContent = liste.length + ' étudiants affichés sur ' + etudiants.length + ' au total';
 
@@ -256,8 +310,8 @@ function afficherEtudiants() {
         repertoire.classList.remove('recherche');
 
         let html = '';
-        for (let i = 0; i < liste.length; i++) {
-            const e = liste[i];
+        for (let i = 0; i < pageListe.length; i++) {
+            const e = pageListe[i];
 
             // Admis ou Échec ?
             let resultat = '❌';
@@ -269,7 +323,7 @@ function afficherEtudiants() {
 
             html += `
                 <div class="etudiant ligne-etudiant">
-                    <p>${i + 1}</p>
+                    <p>${debut + i + 1}</p>
                     <p>${e.prenom} ${e.nom}</p>
                     <p>${e.email}</p>
                     <p>${e.classe}</p>
@@ -287,6 +341,9 @@ function afficherEtudiants() {
         }
         repertoire.innerHTML = html;
     }
+
+    majPagination(totalPages);
+    document.getElementById('pagination').style.display = liste.length === 0 ? 'none' : '';
 
     calculerStatistiques();
 }
